@@ -44,10 +44,3 @@ Para poner el sistema en funcionamiento, se deben iniciar el backend y el fronte
     * **URL de la Aplicación:** `http://localhost:5173`
 
 > **Nota:** El sistema está configurado para usar SQLite por defecto para facilitar el desarrollo. La documentación completa sobre la migración a **PostgreSQL** se encuentra en `backend/README.md`.
-
-## 📚 Documentación Detallada
-
-Para la estructura de archivos, endpoints disponibles y criterios de validación, consulte los README específicos:
-
-* [**Backend Documentation**](./backend/README.md)
-* [**Frontend Documentation**](./frontend/README.md)
