@@ -50,6 +50,8 @@ npm run build
 ```
 
 ## 📂 Estructura del Proyecto
+
+```text
 frontend/
 ├── src/
 │   ├── api/             # Configuración de Axios
