@@ -100,18 +100,19 @@ PUT /api/ejercicios/{id}: Modificar un ejercicio existente.
 
 DELETE /api/ejercicios/{id}: Eliminar un ejercicio.
 
-## 📂 Estructura del Proyecto
+## 📂 Estructura del Proyecto (Backend)
 
+```text
 backend/
 ├── app/
 │   ├── main.py          # Configuración principal de FastAPI
 │   ├── models.py        # Modelos SQLModel (Tablas y Schemas Pydantic)
 │   ├── db.py            # Motor de base de datos y sesiones
 │   └── routers/         # Endpoints modulares
-│       ├── rutinas.py
-│       └── ejercicios.py
-├── requirements.txt     # Lista de dependencias
-└── gym_database.db      # Archivo de BD (SQLite)
+│       ├── rutinas.py   # Rutas para gestión de Rutinas
+│       └── ejercicios.py # Rutas para gestión de Ejercicios
+├── requirements.txt     # Lista de dependencias (generada con pip freeze)
+└── gym_database.db      # Archivo de BD (SQLite para desarrollo)
 
 ## Base de Datos
 
