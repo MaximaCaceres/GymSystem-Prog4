@@ -1,0 +1,262 @@
+================================================================================
+                    GYMBRO - DOCUMENTACIÓN COMPLETA DEL PROYECTO
+================================================================================
+
+RESUMEN EJECUTIVO
+-----------------
+GymBro es un sistema de gestión de rutinas de gimnasio construido con:
+- Backend: Python + FastAPI + SQLModel/SQLAlchemy + PostgreSQL
+- Frontend: React + Vite + Axios + Lucide-React
+
+
+================================================================================
+                           ESTRUCTURA DEL PROYECTO
+================================================================================
+
+GymBro/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py          # Entry point FastAPI
+│   │   ├── db.py            # Conexión a PostgreSQL
+│   │   ├── models.py        # Modelos SQLModel (Rutina, Ejercicio)
+│   │   └── routers/
+│   │       ├── __init__.py
+│   │       ├── rutinas.py   # CRUD de rutinas
+│   │       └── ejercicios.py # CRUD de ejercicios
+│   ├── requirements.txt
+│   └── .env                 # DATABASE_URL
+│
+└── frontend/
+    ├── src/
+    │   ├── api/
+    │   │   ├── client.js    # Axios config
+    │   │   ├── rutinas.js   # API functions
+    │   │   └── ejercicios.js
+    │   ├── components/
+    │   │   ├── Layout.jsx
+    │   │   ├── DashboardCard.jsx
+    │   │   └── ConfirmDialog.jsx
+    │   ├── pages/
+    │   │   ├── Home.jsx
+    │   │   ├── RutinasList.jsx
+    │   │   ├── RoutineView.jsx
+    │   │   ├── RoutineFormAdvanced.jsx
+    │   │   ├── EjerciciosList.jsx
+    │   │   └── EjercicioForm.jsx
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css
+    ├── package.json
+    └── .env                 # VITE_API_BASE_URL
+
+
+================================================================================
+                      ERRORES ENCONTRADOS Y SOLUCIONADOS
+================================================================================
+
+ERROR 1: CORS (Cross-Origin Resource Sharing)
+---------------------------------------------
+SÍNTOMA: El frontend no podía comunicarse con el backend. Errores en consola.
+
+CAUSA: Aunque CORS estaba configurado en main.py, la configuración no era 
+suficiente para desarrollo local.
+
+SOLUCIÓN (backend/app/main.py):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "*"
+        ],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+
+
+ERROR 2: Variables de Entorno No Cargadas (Vite)
+------------------------------------------------
+SÍNTOMA: El cliente API tenía baseURL: undefined.
+
+CAUSA: Vite no recarga las variables de .env sin reiniciar el servidor.
+
+SOLUCIÓN (frontend/src/api/client.js):
+    // Fallback hardcodeado para desarrollo
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+
+ERROR 3: Dropdown de Rutinas Vacío
+----------------------------------
+SÍNTOMA: En /ejercicios/create, el select de rutinas aparecía vacío.
+
+CAUSA: La llamada API fallaba silenciosamente sin mostrar error.
+
+SOLUCIÓN: Agregar interceptors de debugging:
+    api.interceptors.request.use((config) => {
+        console.log(`API Request: ${config.method} ${config.baseURL}${config.url}`);
+        return config;
+    });
+
+
+ERROR 4: Navegación Abría Nuevas Pestañas
+-----------------------------------------
+SÍNTOMA: Cada link abría una nueva pestaña del navegador.
+
+CAUSA: Uso incorrecto de <a href> en lugar de <Link to> de react-router.
+
+SOLUCIÓN: Usar Link de react-router-dom para toda navegación interna.
+
+
+================================================================================
+                         COMANDOS PARA EJECUTAR
+================================================================================
+
+BACKEND:
+    cd backend
+    pip install -r requirements.txt
+    uvicorn app.main:app --reload
+    # Corre en http://localhost:8000
+
+FRONTEND:
+    cd frontend
+    npm install
+    npm run dev
+    # Corre en http://localhost:5173
+
+
+================================================================================
+                           ENDPOINTS DE LA API
+================================================================================
+
+| Método | Endpoint                      | Descripción                    |
+|--------|-------------------------------|--------------------------------|
+| GET    | /api/rutinas                  | Lista todas las rutinas        |
+| GET    | /api/rutinas/{id}             | Obtiene rutina con ejercicios  |
+| GET    | /api/rutinas/buscar?nombre=x  | Busca rutinas por nombre       |
+| POST   | /api/rutinas                  | Crea nueva rutina              |
+| PUT    | /api/rutinas/{id}             | Actualiza rutina               |
+| DELETE | /api/rutinas/{id}             | Elimina rutina (cascade)       |
+| POST   | /api/rutinas/{id}/ejercicios  | Agrega ejercicio a rutina      |
+| GET    | /api/ejercicios               | Lista todos los ejercicios     |
+| PUT    | /api/ejercicios/{id}          | Actualiza ejercicio            |
+| DELETE | /api/ejercicios/{id}          | Elimina ejercicio              |
+
+
+================================================================================
+                           MODELOS DE DATOS
+================================================================================
+
+RUTINA:
+    id: int (primary key)
+    nombre: str (único)
+    descripcion: str (opcional)
+    fecha_creacion: datetime
+    ejercicios: List[Ejercicio]  # Relación cascade
+
+EJERCICIO:
+    id: int (primary key)
+    nombre: str
+    dia_semana: Enum (Lunes-Domingo)
+    series: int
+    repeticiones: int
+    peso: float (opcional)
+    notas: str (opcional)
+    orden: int
+    rutina_id: int (foreign key)
+
+
+================================================================================
+                     FUNCIONALIDADES IMPLEMENTADAS
+================================================================================
+
+Según README Original:
+[X] Alta de rutina con ejercicios en mismo formulario
+[X] Baja de rutina con confirmación y cascade
+[X] Modificación de rutina y ejercicios inline
+[X] Búsqueda de rutinas en tiempo real
+[X] Visualización de ejercicios por día
+[X] Validaciones cliente y servidor
+[X] Loading states y feedback visual
+[X] Diseño responsive
+[X] Efectos visuales (animaciones CSS)
+
+
+================================================================================
+               PROMPT PERFECTO PARA OTRA IA
+================================================================================
+
+Copia y pega esto para que otra IA continúe el trabajo:
+
+---INICIO DEL PROMPT---
+
+Necesito que continues trabajando en el proyecto GymBro, un sistema de gestión 
+de rutinas de gimnasio.
+
+CONTEXTO TÉCNICO:
+- Backend: Python + FastAPI + SQLModel + PostgreSQL
+- Frontend: React + Vite + Axios + Lucide-React
+- Ubicación: D:\Programacion\GymSystem\GymSystem-Prog4\GymBro
+
+ESTRUCTURA PRINCIPAL:
+- backend/app/main.py -> Entry point FastAPI con CORS configurado
+- backend/app/models.py -> Modelos Rutina y Ejercicio con SQLModel
+- backend/app/routers/rutinas.py -> CRUD completo de rutinas
+- backend/app/routers/ejercicios.py -> CRUD de ejercicios
+- frontend/src/api/client.js -> Cliente Axios con interceptors de debugging
+- frontend/src/pages/ -> Componentes de páginas React
+
+COMANDOS DE EJECUCIÓN:
+- Backend: cd backend && uvicorn app.main:app --reload (puerto 8000)
+- Frontend: cd frontend && npm run dev (puerto 5173)
+
+ARCHIVOS CRÍTICOS DE CONFIGURACIÓN:
+- backend/.env -> DATABASE_URL=postgresql://...
+- frontend/.env -> VITE_API_BASE_URL=http://localhost:8000/api
+- frontend/src/api/client.js -> Tiene fallback hardcodeado y debugging
+
+PROBLEMAS CONOCIDOS YA SOLUCIONADOS:
+1. CORS: Configurado en main.py con origins explícitos
+2. Variables de entorno: client.js tiene fallback hardcodeado
+3. Navegación: Usa react-router Link, no anchor tags
+
+FUNCIONALIDADES IMPLEMENTADAS:
+- CRUD completo de rutinas con ejercicios
+- Formulario avanzado para crear rutinas con ejercicios inline
+- Búsqueda en tiempo real
+- Confirmación para eliminaciones
+- Efectos visuales (animaciones CSS)
+- Diseño responsive
+
+SI ENCUENTRAS ERRORES:
+1. Verifica que ambos servidores estén corriendo
+2. Revisa la consola del navegador (F12) para ver logs del API client
+3. El client.js tiene interceptors que loggean todas las peticiones
+4. Si el dropdown está vacío, probablemente la API no responde
+
+QUÉ NECESITO QUE HAGAS:
+[AQUÍ ESPECIFICA TU TAREA]
+
+---FIN DEL PROMPT---
+
+
+================================================================================
+                           NOTAS ADICIONALES
+================================================================================
+
+- El proyecto usa PostgreSQL, asegúrate de tener la base de datos creada
+- Las migraciones se ejecutan automáticamente al iniciar el backend
+- El frontend usa Vite que requiere reinicio para cargar nuevas variables .env
+- Todos los ejercicios pertenecen a una rutina (relación obligatoria)
+- Al eliminar una rutina, sus ejercicios se eliminan en cascada
+- El cliente API tiene interceptors que loggean todas las peticiones en consola
+
+
+================================================================================
+                           FECHA DE CREACIÓN
+================================================================================
+Documento creado: 2025-12-08
+Estado del proyecto: FUNCIONANDO CORRECTAMENTE
+================================================================================
